@@ -1,22 +1,28 @@
 import pygame
+from model.game import Game
+from view.gameView import GameView
+from controller.gameController import GameController
 
-WHITE = 255, 255, 255
-BLACK = 0, 0, 0
+game = Game(9, 7)
 
 pygame.init()
 
 screen = pygame.display.set_mode((800, 600))
 
+view = GameView(screen, game)
+
+controller = GameController(game)
+
+clock = pygame.time.Clock()
+FPS = 30
+
 running = True
 while running:
-    screen.fill(WHITE)
-
-    pygame.draw.circle(screen, BLACK, (400, 300), 100)
-
-    pygame.display.flip()
-
+    view.draw()
+    controller.tick()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+    clock.tick(FPS)
 
 pygame.quit()
