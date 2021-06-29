@@ -1,34 +1,39 @@
-import pygame
+import PyQt5.QtWidgets
+from PyQt5.QtGui import QPainter, QColor
 
-WHITE = 255, 255, 255
-RED = 255, 0, 0
-PINK = 255, 0, 255
-BLACK = 0, 0, 0
+WHITE = QColor(255, 255, 255)
+RED = QColor(255, 0, 0)
+PINK = QColor(255, 0, 255)
+BLACK = QColor(0, 0, 0)
+
 
 class GameView:
-    def __init__(self, screen, game):
-        self._screen = screen
+    def __init__(self, window: PyQt5.QtWidgets.QMainWindow, game):
+        self._window = window
         self._game = game
 
-    def draw(self):
-        self._screen.fill(BLACK)
+    def draw(self, qp: QPainter):
+        qp.setBackground(BLACK)
+        self._window.setStyleSheet("background-color: black;")
         w, h  = self._cell_size()
+        qp.setBrush(WHITE)
         for x in range(self._game.width):
             for y in range(self._game.height):
-                pygame.draw.rect(self._screen, WHITE, (x * w + 1, y * h + 1, w - 2, h - 2))
+                qp.drawRect(x * w + 1, y * h + 1, w - 2, h - 2)
+        qp.setBrush(PINK)
         for segment in self._game.snake.tail:
             x, y = segment.pos()
-            pygame.draw.rect(self._screen, PINK, (x * w + 1, y * h + 1, w - 2, h - 2))
+            qp.drawRect(x * w + 1, y * h + 1, w - 2, h - 2)
         x, y = self._game.snake.head.pos()
-        pygame.draw.rect(self._screen, RED, (x * w + 1, y * h + 1, w - 2, h - 2))
-        pygame.display.flip()
+        qp.setBrush(RED)
+        qp.drawRect(x * w + 1, y * h + 1, w - 2, h - 2) 
 
     def _cell_size(self):
         return self._width() / self._game.width,\
             self._height() / self._game.height
 
     def _width(self):
-        return self._screen.get_width()
+        return self._window.width()
 
     def _height(self):
-        return self._screen.get_height()
+        return self._window.height()

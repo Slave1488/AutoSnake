@@ -1,27 +1,25 @@
-import pygame
 from model.snake import LEFT, RIGHT, UP, DOWN, DIRECTION_NONE
+from PyQt5 import QtGui
+from PyQt5.QtCore import QPoint
 
 skip_frame = 15
 
 
 class GameController:
-    def __init__(self, game):
+    def __init__(self, game, w, h):
         self._game = game
-        self._counter = 0
+        self.cell_size = lambda: (w / game.width, h / game.height)
 
     def tick(self):
         self._update_snakes_direction()
         self._update_game()
 
     def _update_snakes_direction(self):
-        target_xx, target_yy = pygame.mouse.get_pos()
-        c_w, c_h = cell_size(self._game.width, self._game.height)
-        target_x = target_xx // c_w
-        target_y = target_yy // c_h
-        pos_x, pos_y = self._game.snake.pos()
-        target_x -= pos_x
-        target_y -= pos_y
-        direction_x, direction_y = map(sign, (target_x, target_y))
+        target_ppos = QtGui.QCursor().pos()
+        target_pos = QPoint(*convert_to_field_pos(to_tuple(target_ppos), self.cell_size()))
+        snake_pos = QPoint(*self._game.snake.pos())
+        radius = target_pos - snake_pos
+        direction_x, direction_y = map(sign, to_tuple(radius))
         if direction_x == 1:
             direction = RIGHT
         elif direction_x == -1:
@@ -35,20 +33,18 @@ class GameController:
         self._game.update_snakes_direction(direction)
 
     def _update_game(self):
-        if self._counter == 0:
-            self._game.step()
-        self._update_counter()
-
-    def _update_counter(self):
-        self._counter += 1
-        if self._counter == skip_frame:
-            self._counter = 0
-
-
-def cell_size(width, height):
-    w, h = pygame.display.get_surface().get_size()
-    return w / width, h / height
+        self._game.step()
 
 
 def sign(num):
     return -1 if num < 0 else 1 if num > 0 else 0
+
+
+def convert_to_field_pos(ppos, cell_size):
+    xx, yy = ppos
+    cell_size_xx, cell_size_yy = cell_size
+    return xx / cell_size_xx, yy / cell_size_yy
+
+
+def to_tuple(point: QPoint):
+    return point.x(), point.y()
