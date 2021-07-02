@@ -4,6 +4,7 @@ from PyQt5.QtGui import QPainter, QColor
 
 WHITE = QColor(255, 255, 255)
 RED = QColor(255, 0, 0)
+GREEN = QColor(0, 255, 0)
 PINK = QColor(255, 0, 255)
 BLACK = QColor(0, 0, 0)
 
@@ -21,6 +22,10 @@ class GameView:
         for x in range(self._game.width):
             for y in range(self._game.height):
                 qp.drawRect(x * w + 1, y * h + 1, w - 2, h - 2)
+        qp.setBrush(GREEN)
+        pos = self._game.apple.pos()
+        x, y = pos.x(), pos.y()
+        qp.drawRect(x * w + 1, y * h + 1, w - 2, h - 2)
         qp.setBrush(PINK)
         for segment in self._game.snake.tail:
             pos = segment.pos()

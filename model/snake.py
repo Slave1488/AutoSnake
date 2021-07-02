@@ -1,4 +1,5 @@
-from copy import copy
+from functools import reduce
+from model.apple import Apple
 from typing import List
 
 from PyQt5.QtCore import QPoint
@@ -21,11 +22,17 @@ class Snake(Entity):
         self._pos = self._pos + self._direction
         self.tail.pop(0)
 
+    def eat(self, apple: Apple):
+        self.tail.append(Segment(apple.pos()))
+
     def update_direction(self, direction: Direction):
         self._direction = direction
 
-    def collision(self, cell):
-        return False
+    def focus(self):
+        return self.pos() + self._direction
+
+    def collid(self, cell: QPoint):
+        return reduce(lambda acc, next: acc or next, map(lambda s: cell == s.pos(), (self.head(), *self.tail)))
 
     def head(self)-> Segment:
         return Segment(self._pos)

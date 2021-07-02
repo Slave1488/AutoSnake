@@ -1,5 +1,6 @@
-from model.game import Game
-from model.snake import LEFT, RIGHT, UP, DOWN, DIRECTION_NONE
+from model.apple import Apple
+from model.game import BOUND, Game
+from model.snake import LEFT, RIGHT, Segment, UP, DOWN, DIRECTION_NONE
 from PyQt5 import QtGui
 from PyQt5.QtCore import QPoint
 
@@ -34,9 +35,13 @@ class GameController:
         self._game.update_snakes_direction(direction)
 
     def _update_game(self):
-        self._game.step()
-        if self._game.collision(self._game.snake.head().pos()):
+        let = self._game.look_at(self._game.snake.focus())
+        if let is BOUND or isinstance(let, Segment):
             raise RuntimeError()
+        self._game.step()
+        if isinstance(let, Apple):
+            self._game.snake.eat(let)
+            self._game.respawn_apple()
 
 
 def sign(num):
