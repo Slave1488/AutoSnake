@@ -35,6 +35,8 @@ class GameController:
         self._game.update_snakes_direction(direction)
 
     def _update_game(self):
+        if self._game.snake._direction is DIRECTION_NONE:
+            return
         let = self._game.look_at(self._game.snake.focus())
         if let is BOUND or isinstance(let, Segment):
             raise RuntimeError()

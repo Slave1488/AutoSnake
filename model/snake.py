@@ -16,10 +16,8 @@ class Segment(Entity):
 
 class Snake(Entity):
     def move(self):
-        if self._direction is DIRECTION_NONE:
-            return
         self.tail.append(self.head())
-        self._pos = self._pos + self._direction
+        self._pos = self.focus()
         self.tail.pop(0)
 
     def eat(self, apple: Apple):
