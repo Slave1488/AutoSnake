@@ -11,10 +11,6 @@ app = QtWidgets.QApplication(sys.argv)
 
 
 class MainApp(QtWidgets.QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.initUI()
-
     def initUI(self):
         self.setGeometry(0, 0, 800, 600)
         self.setWindowTitle('Snake')
@@ -29,6 +25,10 @@ class MainApp(QtWidgets.QMainWindow):
 
     def set_view(self, view):
         self._view = view
+
+    def __init__(self):
+        super().__init__()
+        self.initUI()
 
 
 class GameLoop(QThread):
@@ -48,7 +48,7 @@ class GameLoop(QThread):
                 time.sleep(sleepTime)
 
 
-game = Game(9, 7)
+game = Game(4, 10)
 
 window = MainApp()
 
@@ -56,7 +56,7 @@ view = GameView(window, game)
 
 window.set_view(view)
 
-controller = GameController(game, window.width(), window.height())
+controller = GameController(game)
 
 _ = GameLoop(controller)
 _.start()
