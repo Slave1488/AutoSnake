@@ -9,8 +9,8 @@ class Game:
         self.width = width
         self.height = height
         self.snake = Snake(
-            QPoint((width - 1) // 2, (height - 1) // 2),
-            Segment(QPoint((width - 1) // 2, (height - 1) // 2 - 1)),
+            QPoint(width // 2, height // 2),
+            Segment(QPoint(width // 2, height // 2 - 1)),
         )
         self.apple = Apple(self.find_free_cell(QPoint(random.randint(0, self.width - 1), random.randint(0, self.height - 1))))
 
