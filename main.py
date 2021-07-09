@@ -21,9 +21,10 @@ class MainApp(QtWidgets.QMainWindow):
         qp = QPainter()
         qp.begin(self)
         self._view.draw(qp)
+        self._view.draw_way(qp)
         qp.end()
 
-    def set_view(self, view):
+    def set_view(self, view: GameView):
         self._view = view
 
     def __init__(self):
@@ -34,11 +35,12 @@ class MainApp(QtWidgets.QMainWindow):
 class GameLoop(QThread):
     FPS = 4
 
-    def __init__(self, controller):
+    def __init__(self, game):
         super().__init__()
-        self._controller = controller
+        self._game = game
 
     def run(self):
+        self._controller = GameController(self._game)
         next_tick_time = time.time()
         while True:
             next_tick_time += 1 / GameLoop.FPS
@@ -56,9 +58,7 @@ view = GameView(window, game)
 
 window.set_view(view)
 
-controller = GameController(game)
-
-_ = GameLoop(controller)
+_ = GameLoop(game)
 _.start()
 
 sys.exit(app.exec_())
