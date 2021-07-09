@@ -65,28 +65,49 @@ class GameController:
         def is_nearby(id_one, id_other):
             return abs(id_one % self._game.width - id_other % self._game.width) +\
                 abs(id_one // self._game.width - id_other // self._game.width) <= 1
+        def is_bind(*ids):
+            if len(ids) < 2:
+                return True
+            id1, id2, *_ = ids
+            stack = [id1]
+            l_mark = {}
+            while stack[-1] != id2:
+                cur_id = stack.pop()
+                l_mark[cur_id] = True
+                for next_id in filter(lambda id: not mark[id] and not l_mark.get(id), neighbors(cur_id)):
+                    stack.append(next_id)
+                if len(stack) == 0:
+                    return False
+            if len(_) != 0:
+                return is_bind(id1, *_)
+            return True
 
         stack = [start.y() * self._game.width + start.x()]
-        way = [stack[-1]]
+        self._game.way = [stack[-1]]
         # print(f'{way[-1]}')
         mark = [False for _ in range(self._N)]
-        mark[way[-1]] = True
-        while not (len(way) == self._N and is_nearby(way[-1], way[0])):
-            deadlock = True
-            for nearby_id in rearrange((*neighbors(way[-1]),)):
-                if not mark[nearby_id]:
-                    stack.append(nearby_id)
-                    deadlock = False
-            if deadlock:
-                while stack[-1] == way[-1]:
-                    mark[way.pop()] = False
+        dead_counter = 0
+        miss_counter = 0
+        while not (len(self._game.way) == self._N and is_nearby(self._game.way[-1], self._game.way[0])):
+            mark[self._game.way[-1]] = True
+            next_ids = (*filter(lambda id: not mark[id], rearrange((*neighbors(self._game.way[-1]),))),)
+            if len(next_ids) != 0 and is_bind(*next_ids):
+                for id in next_ids:
+                    stack.append(id)
+            else:
+                if len(self._game.way) == self._N:
+                    miss_counter += 1
+                    print('-'.join(map(str, self._game.way)))
+                dead_counter += 1
+                was_len = len(self._game.way)
+                while stack[-1] == self._game.way[-1]:
+                    mark[self._game.way.pop()] = False
                     stack.pop()
-            way.append(stack[-1])
-            if len(way) == self._N:
-                print('-'.join(map(str, way)))
+                print(f'{miss_counter}\t{dead_counter}\t{was_len} - {was_len - len(self._game.way)}\t -> {len(self._game.way)} ({100 - len(self._game.way)})')
+            self._game.way.append(stack[-1])
             # print(f'{" " * (len(way) - 1)}{way[-1]}')
-            mark[way[-1]] = True
-        return *map(lambda id: QPoint(id % self._game.width, id // self._game.width), way),
+        print('-'.join(map(str, self._game.way)))
+        return *map(lambda id: QPoint(id % self._game.width, id // self._game.width), self._game.way),
 
 
 def sign(num):
