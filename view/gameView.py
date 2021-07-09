@@ -34,7 +34,21 @@ class GameView:
         pos = self._game.snake.pos()
         x, y = pos.x(), pos.y()
         qp.setBrush(RED)
-        qp.drawRect(x * w + 1, y * h + 1, w - 2, h - 2) 
+        qp.drawRect(x * w + 1, y * h + 1, w - 2, h - 2)
+
+    def draw_way(self, qp: QPainter):
+        if not hasattr(self._game, 'way'):
+            return
+        curent_id, *way = self._game.way
+        cell_w, cell_h = self._cell_size()
+        for id in way:
+            qp.drawLine(
+                curent_id % self._game.width * cell_w + cell_w / 2,
+                curent_id // self._game.width * cell_h + cell_h / 2,
+                id % self._game.width * cell_w + cell_w / 2,
+                id // self._game.width * cell_h + cell_h / 2)
+            curent_id = id
+
 
     def _cell_size(self):
         return self._width() / self._game.width,\
